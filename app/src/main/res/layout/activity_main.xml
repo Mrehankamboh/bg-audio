@@ -153,45 +153,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/perm_overlay"
-                        android:textColor="@color/text"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/overlayStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/perm_overlay_hint"
-                        android:textColor="@color/muted"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/overlayButton"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:minHeight="40dp"
-                    android:text="@string/open_settings" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/notificationRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

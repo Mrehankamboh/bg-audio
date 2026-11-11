@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import com.officework.bgaudio.data.Prefs
 import com.officework.bgaudio.media.KeepPolicy
-import com.officework.bgaudio.overlay.PinBubble
 import com.officework.bgaudio.service.SessionKeepService
 
 object KeepCoordinator {
@@ -35,10 +34,7 @@ object KeepCoordinator {
 
         val prefs = Prefs(app)
         val prev = prefs.lastForeground
-        if (packageName == prev) {
-            PinBubble.sync(app)
-            return
-        }
+        if (packageName == prev) return
         val leftAllowed = prefs.enabled && prev.isNotBlank() && prefs.isAllowed(prev)
         prefs.lastForeground = packageName
         if (leftAllowed || prefs.warnPackage == packageName) prefs.warnPackage = ""
@@ -49,7 +45,6 @@ object KeepCoordinator {
     fun publish(context: Context) {
         val app = context.applicationContext
         app.sendBroadcast(Intent(ACTION_STATUS).setPackage(app.packageName))
-        PinBubble.sync(app)
     }
 
     private fun schedule(context: Context, pkg: String) {

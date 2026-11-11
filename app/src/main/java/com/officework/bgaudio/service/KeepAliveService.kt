@@ -15,8 +15,8 @@ import androidx.core.app.ServiceCompat
 import com.officework.bgaudio.R
 import com.officework.bgaudio.data.Prefs
 import com.officework.bgaudio.keep.KeepCoordinator
-import com.officework.bgaudio.overlay.PinBubble
 import com.officework.bgaudio.ui.MainActivity
+import com.officework.bgaudio.update.AppUpdate
 
 class KeepAliveService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
@@ -41,7 +41,6 @@ class KeepAliveService : Service() {
         if (!enterForeground()) {
             Prefs(this).enabled = false
             KeepCoordinator.cancel()
-            PinBubble.hide(this)
             KeepCoordinator.publish(this)
             stopSelf()
             return START_NOT_STICKY
@@ -49,12 +48,11 @@ class KeepAliveService : Service() {
         if (stopping) {
             Prefs(this).enabled = false
             KeepCoordinator.cancel()
-            PinBubble.hide(this)
             stopInForeground()
             stopSelf()
             return START_NOT_STICKY
         }
-        PinBubble.sync(this)
+        AppUpdate.check(this)
         return START_STICKY
     }
 
@@ -76,11 +74,6 @@ class KeepAliveService : Service() {
             Prefs(this).lastPlayResult = "service start failed: ${e.message}"
             false
         }
-    }
-
-    override fun onDestroy() {
-        PinBubble.hide(this)
-        super.onDestroy()
     }
 
     private fun stopInForeground() {

@@ -27,6 +27,7 @@ import com.officework.bgaudio.keep.KeepCoordinator
 import com.officework.bgaudio.service.KeepAliveService
 import com.officework.bgaudio.service.PackageWatchService
 import com.officework.bgaudio.service.SessionKeepService
+import com.officework.bgaudio.update.AppUpdate
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -94,14 +95,6 @@ class MainActivity : AppCompatActivity() {
             openSettings(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
         findViewById<android.view.View>(R.id.batteryButton).setOnClickListener { openBattery() }
-        findViewById<android.view.View>(R.id.overlayButton).setOnClickListener {
-            openSettings(
-                Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
-            )
-        }
         findViewById<android.view.View>(R.id.notificationButton).setOnClickListener {
             if (Build.VERSION.SDK_INT >= 33) {
                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -129,6 +122,14 @@ class MainActivity : AppCompatActivity() {
         renderPermissions()
         renderDebug()
         if (::adapter.isInitialized) adapter.setAccess(prefs.allowAll, prefs.allowedPackages())
+        AppUpdate.offerInstall(this, intent.getBooleanExtra(AppUpdate.EXTRA_INSTALL, false))
+        AppUpdate.check(this)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        AppUpdate.offerInstall(this, intent.getBooleanExtra(AppUpdate.EXTRA_INSTALL, false))
     }
 
     override fun onStop() {
@@ -152,7 +153,6 @@ class MainActivity : AppCompatActivity() {
         status(R.id.listenerStatus, notificationListenerOn(), getString(R.string.perm_listener_hint))
         status(R.id.accessibilityStatus, accessibilityOn(), getString(R.string.perm_accessibility_hint))
         status(R.id.batteryStatus, batteryIgnored(), getString(R.string.perm_battery_hint))
-        status(R.id.overlayStatus, Settings.canDrawOverlays(this), getString(R.string.perm_overlay_hint))
         if (Build.VERSION.SDK_INT >= 33) {
             val granted = ContextCompat.checkSelfPermission(
                 this,

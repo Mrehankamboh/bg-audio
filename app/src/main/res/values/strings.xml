@@ -19,11 +19,8 @@
     <string name="perm_accessibility_hint">Sees which app is in front. Does not read the screen.</string>
     <string name="perm_battery">Battery</string>
     <string name="perm_battery_hint">Lets the keep-alive service stay running.</string>
-    <string name="perm_overlay">Display over other apps</string>
-    <string name="perm_overlay_hint">Shows a small note only if an app refuses background sound.</string>
     <string name="perm_notifications">Notifications</string>
     <string name="perm_notifications_hint">Shows the ongoing keep-alive notification.</string>
-    <string name="not_allowed">Background audio not allowed</string>
     <string name="stop">Stop</string>
     <string name="notif_title">Background audio on</string>
     <string name="notif_text">Allowed apps can keep playing when you switch away.</string>
@@ -33,4 +30,7 @@
     <string name="app_icon">App icon</string>
     <string name="allow_app">Allow background audio</string>
     <string name="no_apps">No apps match.</string>
+    <string name="update_channel">Updates</string>
+    <string name="update_title">Update ready</string>
+    <string name="update_text">Tap to install the latest Background Audio.</string>
 </resources>

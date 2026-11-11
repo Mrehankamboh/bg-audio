@@ -43,6 +43,12 @@ class Prefs(context: Context) {
             sp.edit().putString(KEY_WARN, value).commit()
         }
 
+    var lastUpdateCheck: Long
+        get() = sp.getLong(KEY_UPDATE_CHECK, 0L)
+        set(value) {
+            sp.edit().putLong(KEY_UPDATE_CHECK, value).commit()
+        }
+
     fun allowedPackages(): Set<String> = sp.getStringSet(KEY_PACKAGES, emptySet()).orEmpty().toSet()
 
     fun isAllowed(pkg: String): Boolean {
@@ -74,5 +80,6 @@ class Prefs(context: Context) {
         private const val KEY_SESSION = "last_session"
         private const val KEY_RESULT = "last_result"
         private const val KEY_WARN = "warn_package"
+        private const val KEY_UPDATE_CHECK = "update_check"
     }
 }
