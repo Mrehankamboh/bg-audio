@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Background Audio</string>
-    <string name="explanation">Leave an allowed app and open another one full screen. The first app leaves the screen and the sound keeps playing. There is no split screen. Swipe that app away and the sound stops. Nothing is recorded or uploaded.</string>
+    <string name="explanation">Open the app that is playing, then tap Pin. The screen splits in half so that app stays open. Open the other app in the empty half. Swipe the first app away and the sound stops. Nothing is recorded or uploaded.</string>
     <string name="enable">Keep audio running</string>
     <string name="allow_all">All apps</string>
     <string name="filter_hint">Filter apps</string>
@@ -9,18 +9,18 @@
     <string name="debug_header">Last event</string>
     <string name="debug_empty">Foreground: —\nSession: —\nResult: —</string>
     <string name="open_settings">Open</string>
-    <string name="allow">Allow</string>
     <string name="status_on">On</string>
     <string name="status_off">Off</string>
-    <string name="status_not_needed">Not required on this Android version</string>
     <string name="perm_listener">Notification access</string>
     <string name="perm_listener_hint">Reads media controls only, so a paused song can be resumed.</string>
     <string name="perm_accessibility">Accessibility</string>
     <string name="perm_accessibility_hint">Sees which app is in front. Does not read the screen.</string>
     <string name="perm_battery">Battery</string>
     <string name="perm_battery_hint">Lets the keep-alive service stay running.</string>
-    <string name="perm_notifications">Notifications</string>
-    <string name="perm_notifications_hint">Shows the ongoing keep-alive notification.</string>
+    <string name="perm_overlay">Display over other apps</string>
+    <string name="perm_overlay_hint">Shows the Pin button. Tap it for half screen.</string>
+    <string name="pin">Pin</string>
+    <string name="not_allowed">Background audio not allowed</string>
     <string name="stop">Stop</string>
     <string name="notif_title">Background audio on</string>
     <string name="notif_text">Allowed apps can keep playing when you switch away.</string>

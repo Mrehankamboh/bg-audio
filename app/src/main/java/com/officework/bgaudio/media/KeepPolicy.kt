@@ -6,7 +6,7 @@ package com.officework.bgaudio.media
  * A missing session is left alone so a swiped-away app is not reopened.
  */
 object KeepPolicy {
-    const val LAST_ATTEMPT = 5
+    const val LAST_ATTEMPT = 12
 
     const val STATE_NONE = 0
     const val STATE_STOPPED = 1
@@ -32,14 +32,9 @@ object KeepPolicy {
         if (snaps.any { it.state == STATE_PLAYING || it.state == STATE_BUFFERING }) {
             return Presence.PLAYING
         }
-        val paused = snaps.filter { it.state == STATE_PAUSED }
-        if (paused.isNotEmpty()) {
-            return if (paused.any { it.actions and ACTION_PLAY != 0L }) {
-                Presence.PAUSED_CAN_PLAY
-            } else {
-                Presence.PAUSED_NO_ACTION
-            }
-        }
+        if (snaps.any { it.actions and ACTION_PLAY != 0L }) return Presence.PAUSED_CAN_PLAY
+        val paused = snaps.any { it.state == STATE_PAUSED }
+        if (paused) return Presence.PAUSED_NO_ACTION
         return Presence.OTHER
     }
 

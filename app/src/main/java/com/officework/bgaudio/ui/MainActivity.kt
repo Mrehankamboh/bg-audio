@@ -69,6 +69,12 @@ class MainActivity : AppCompatActivity() {
             if (rendering) return@setOnCheckedChangeListener
             prefs.enabled = on
             if (on) {
+                if (Build.VERSION.SDK_INT >= 33 &&
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
                 try {
                     KeepAliveService.start(this)
                 } catch (e: RuntimeException) {
@@ -95,10 +101,13 @@ class MainActivity : AppCompatActivity() {
             openSettings(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
         findViewById<android.view.View>(R.id.batteryButton).setOnClickListener { openBattery() }
-        findViewById<android.view.View>(R.id.notificationButton).setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 33) {
-                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+        findViewById<android.view.View>(R.id.overlayButton).setOnClickListener {
+            openSettings(
+                Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+            )
         }
 
         executor.execute {
@@ -153,16 +162,7 @@ class MainActivity : AppCompatActivity() {
         status(R.id.listenerStatus, notificationListenerOn(), getString(R.string.perm_listener_hint))
         status(R.id.accessibilityStatus, accessibilityOn(), getString(R.string.perm_accessibility_hint))
         status(R.id.batteryStatus, batteryIgnored(), getString(R.string.perm_battery_hint))
-        if (Build.VERSION.SDK_INT >= 33) {
-            val granted = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-            status(R.id.notificationStatus, granted, getString(R.string.perm_notifications_hint))
-        } else {
-            findViewById<TextView>(R.id.notificationStatus).text = getString(R.string.status_not_needed)
-            findViewById<android.view.View>(R.id.notificationButton).visibility = android.view.View.GONE
-        }
+        status(R.id.overlayStatus, Settings.canDrawOverlays(this), getString(R.string.perm_overlay_hint))
     }
 
     private fun renderDebug() {

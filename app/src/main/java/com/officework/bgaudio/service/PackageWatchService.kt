@@ -33,6 +33,10 @@ class PackageWatchService : AccessibilityService() {
         super.onDestroy()
     }
 
+    fun toggleSplitScreen(): Boolean {
+        return performGlobalAction(GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
+    }
+
     companion object {
         @Volatile
         var instance: PackageWatchService? = null

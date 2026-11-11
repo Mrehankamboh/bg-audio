@@ -54,11 +54,15 @@ class KeepPolicyTest {
     }
 
     @Test
-    fun stoppedSessionIsLeftAlone() {
+    fun stoppedSessionWithPlayActionSendsPlay() {
+        val early = decide(listOf(snap(KeepPolicy.STATE_STOPPED, KeepPolicy.ACTION_PLAY)), 0)
+        assertTrue(early.sendPlay)
+        assertEquals("play() sent: $pkg", early.message)
+
         val last = decide(listOf(snap(KeepPolicy.STATE_STOPPED, KeepPolicy.ACTION_PLAY)), KeepPolicy.LAST_ATTEMPT)
         assertFalse(last.sendPlay)
-        assertFalse(last.warn)
-        assertEquals("left as stopped: $pkg", last.message)
+        assertTrue(last.warn)
+        assertEquals("not supported: $pkg", last.message)
     }
 
     @Test

@@ -153,7 +153,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/notificationRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -169,27 +168,27 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/perm_notifications"
+                        android:text="@string/perm_overlay"
                         android:textColor="@color/text"
                         android:textSize="15sp" />
 
                     <TextView
-                        android:id="@+id/notificationStatus"
+                        android:id="@+id/overlayStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/perm_notifications_hint"
+                        android:text="@string/perm_overlay_hint"
                         android:textColor="@color/muted"
                         android:textSize="12sp" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/notificationButton"
+                    android:id="@+id/overlayButton"
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:minHeight="40dp"
-                    android:text="@string/allow" />
+                    android:text="@string/open_settings" />
             </LinearLayout>
         </LinearLayout>
 

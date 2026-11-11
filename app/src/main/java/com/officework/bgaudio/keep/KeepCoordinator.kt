@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import com.officework.bgaudio.data.Prefs
 import com.officework.bgaudio.media.KeepPolicy
+import com.officework.bgaudio.overlay.PinBubble
+import com.officework.bgaudio.service.PackageWatchService
 import com.officework.bgaudio.service.SessionKeepService
 
 object KeepCoordinator {
@@ -23,6 +25,7 @@ object KeepCoordinator {
 
     private val handler = Handler(Looper.getMainLooper())
     private var generation = 0
+    private var watching: String? = null
 
     fun cancel() {
         generation++
@@ -34,23 +37,50 @@ object KeepCoordinator {
 
         val prefs = Prefs(app)
         val prev = prefs.lastForeground
-        if (packageName == prev) return
+        if (packageName == prev) {
+            PinBubble.sync(app)
+            return
+        }
         val leftAllowed = prefs.enabled && prev.isNotBlank() && prefs.isAllowed(prev)
         prefs.lastForeground = packageName
         if (leftAllowed || prefs.warnPackage == packageName) prefs.warnPackage = ""
         publish(app)
-        if (leftAllowed) schedule(app, prev)
+        if (!leftAllowed) return
+        if (watching != null && prev != watching && !hasSession(app, prev)) return
+        watching = prev
+        schedule(app, prev)
+    }
+
+    fun pin(context: Context) {
+        val app = context.applicationContext
+        val service = PackageWatchService.instance
+        val result = when {
+            service == null -> "accessibility is off"
+            service.toggleSplitScreen() -> "split-screen toggled"
+            else -> "split-screen refused"
+        }
+        record(app, Prefs(app).lastSessionState.ifBlank { "—" }, result, warn = null)
     }
 
     fun publish(context: Context) {
         val app = context.applicationContext
         app.sendBroadcast(Intent(ACTION_STATUS).setPackage(app.packageName))
+        PinBubble.sync(app)
+    }
+
+    private fun hasSession(context: Context, pkg: String): Boolean {
+        val listener = SessionKeepService.instance ?: return false
+        return try {
+            listener.snapsFor(pkg).isNotEmpty()
+        } catch (_: SecurityException) {
+            false
+        }
     }
 
     private fun schedule(context: Context, pkg: String) {
         val gen = ++generation
-        val delays = longArrayOf(0L, 400L, 1000L, 1800L, 3200L, 4500L)
-        delays.forEachIndexed { attempt, delay ->
+        for (attempt in 0..KeepPolicy.LAST_ATTEMPT) {
+            val delay = if (attempt == 0) 0L else attempt * 1000L
             handler.postDelayed({
                 if (gen != generation) return@postDelayed
                 attemptKeep(context, pkg, attempt, gen)
@@ -61,8 +91,14 @@ object KeepCoordinator {
     private fun attemptKeep(context: Context, pkg: String, attempt: Int, gen: Int) {
         if (gen != generation) return
         val prefs = Prefs(context)
-        if (!prefs.enabled || !prefs.isAllowed(pkg)) return
-        if (prefs.lastForeground == pkg) return
+        if (!prefs.enabled || !prefs.isAllowed(pkg)) {
+            if (watching == pkg) watching = null
+            return
+        }
+        if (prefs.lastForeground == pkg) {
+            if (watching == pkg) watching = null
+            return
+        }
 
         val listener = SessionKeepService.instance
         if (listener == null) {
@@ -90,9 +126,10 @@ object KeepCoordinator {
             try {
                 for (controller in listener.controllersFor(pkg)) {
                     val state = controller.playbackState ?: continue
-                    val paused = state.state == KeepPolicy.STATE_PAUSED
+                    val playing = state.state == KeepPolicy.STATE_PLAYING ||
+                        state.state == KeepPolicy.STATE_BUFFERING
                     val canPlay = state.actions and KeepPolicy.ACTION_PLAY != 0L
-                    if (!paused || !canPlay) continue
+                    if (playing || !canPlay) continue
                     try {
                         controller.transportControls.play()
                     } catch (e: RuntimeException) {
@@ -112,6 +149,7 @@ object KeepCoordinator {
             else -> null
         }
         record(context, label, message, warn)
+        if (attempt >= KeepPolicy.LAST_ATTEMPT && watching == pkg) watching = null
     }
 
     private fun record(context: Context, session: String, result: String, warn: String?) {
